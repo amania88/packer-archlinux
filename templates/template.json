@@ -1,0 +1,43 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "iso_url": null,
+      "iso_checksum": null,
+      "iso_checksum_type": null,
+      "boot_wait": "5s",
+      "boot_command": [
+        "<enter><wait10><wait10>",
+        "curl -L http://{{.HTTPIP}}:{{.HTTPPort}}/virtualbox.sh | sh<enter>"
+      ],
+      "guest_os_type": "ArchLinux_64",
+      "http_directory": null,
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "ssh_wait_timeout": "60m",
+      "guest_additions_path": "disable",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cableconnected1",
+          "on"
+        ]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "chef-solo",
+      "cookbook_paths": null,
+      "run_list": null,
+      "skip_install": true
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant"
+    }
+  ]
+}

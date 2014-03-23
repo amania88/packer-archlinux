@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require File.expand_path "../../lib/packer_archlinux", __FILE__
+
+PackerArchLinux.start ARGV
