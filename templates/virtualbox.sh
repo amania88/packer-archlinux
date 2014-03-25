@@ -36,7 +36,6 @@ cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 sed -i 's/^#//' /etc/pacman.d/mirrorlist.backup
 echo "sorting mirror..."
 rankmirrors /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-sleep 10
 pacman-db-upgrade
 
 # Install the base system
@@ -57,25 +56,28 @@ ln -s /usr/share/zoneinfo/$Zone/$SubZone /etc/localtime
 
 echo $HOSTNAME > /etc/hostname
 
-systemctl enable dhcpcd sshd
+systemctl enable sshd
+
+touch /etc/udev/rules.d/80-net-setup-link.rules
+ln -s /usr/lib/systemd/system/dhcpcd@.service /etc/systemd/system/multi-user.target.wants/dhcpcd@eth0.service
 
 echo "root:vagrant" | chpasswd
 
 grub-install --target=i386-pc --recheck /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
+sed -i 's/timeout=5/timeout=0/' /boot/grub/grub.cfg
 
 gem install chef --no-user-install --no-ri --no-rdoc
 
-useradd -m vagrant
-gpasswd --add vagrant vboxsf
+useradd -m -G vboxsf vagrant
 echo "vagrant:vagrant" | chpasswd
 
 echo vboxguest >> /etc/modules-load.d/virtualbox.conf
-echo vboxsf >> /etc/modules-load.d/virtualbox.conf
+echo vboxsf    >> /etc/modules-load.d/virtualbox.conf
 echo vboxvideo >> /etc/modules-load.d/virtualbox.conf
 
 echo 'Defaults env_keep += "SSH_AUTH_SOCK"' > /etc/sudoers.d/10_vagrant
-echo 'vagrant ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers.d/10_vagrant
+echo 'vagrant ALL=(ALL) NOPASSWD: ALL'     >> /etc/sudoers.d/10_vagrant
 chmod 0440 /etc/sudoers.d/10_vagrant
 
 su - vagrant
