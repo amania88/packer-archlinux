@@ -10,6 +10,8 @@ class PackerArchLinux < Thor
   option :cookbook, :default => COOKBOOKS_DIR
   option :force,    :aliases => :f, :type => :boolean
   option :name,     :default => "packer-archlinux"
+  option :user,     :default => "vagrant"
+  option :password, :default => "vagrant"
   option :path,     :default => "."
   option :run_list, :default => "recipe[default]"
   option :dry_run,  :type    => :boolean
@@ -21,6 +23,13 @@ class PackerArchLinux < Thor
       builders["iso_checksum"]      = "bc24540b60a5128d51b6abda462807ce51c77704"
       builders["iso_checksum_type"] = "sha1"
       builders["http_directory"]    = TEMPLATES_DIR
+      builders["ssh_username"]      = options[:user]
+      builders["ssh_password"]      = options[:password]
+
+      if options["password"] != "vagrant"
+        builders["shutdown_command"] = "echo '#{options[:password]}' | sudo -S shutdown -P now"
+      end
+
       builders
     end
 

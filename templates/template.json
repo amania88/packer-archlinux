@@ -15,8 +15,8 @@
       "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
       "ssh_wait_timeout": "60m",
       "guest_additions_path": "disable",
-      "ssh_username": "vagrant",
-      "ssh_password": "vagrant",
+      "ssh_username": null,
+      "ssh_password": null,
       "vboxmanage": [
         [
           "modifyvm",

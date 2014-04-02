@@ -2,6 +2,8 @@
 HOSTNAME="vagrant.nzwsch.net"
 Zone="Asia"
 SubZone="Tokyo"
+Username="vagrant"
+Password="vagrant"
 
 # Prepare the storage drive
 fdisk /dev/sda <<EOF
@@ -61,7 +63,7 @@ systemctl enable sshd
 touch /etc/udev/rules.d/80-net-setup-link.rules
 ln -s /usr/lib/systemd/system/dhcpcd@.service /etc/systemd/system/multi-user.target.wants/dhcpcd@eth0.service
 
-echo "root:vagrant" | chpasswd
+echo "root:$Password" | chpasswd
 
 grub-install --target=i386-pc --recheck /dev/sda
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -69,18 +71,18 @@ sed -i 's/timeout=5/timeout=0/' /boot/grub/grub.cfg
 
 gem install chef --no-user-install --no-ri --no-rdoc
 
-useradd -m -G vboxsf vagrant
-echo "vagrant:vagrant" | chpasswd
+useradd -m -G vboxsf $Username
+echo "$Username:$Password" | chpasswd
 
 echo vboxguest >> /etc/modules-load.d/virtualbox.conf
 echo vboxsf    >> /etc/modules-load.d/virtualbox.conf
 echo vboxvideo >> /etc/modules-load.d/virtualbox.conf
 
-echo 'Defaults env_keep += "SSH_AUTH_SOCK"' > /etc/sudoers.d/10_vagrant
-echo 'vagrant ALL=(ALL) NOPASSWD: ALL'     >> /etc/sudoers.d/10_vagrant
-chmod 0440 /etc/sudoers.d/10_vagrant
+echo 'Defaults env_keep += "SSH_AUTH_SOCK"' > /etc/sudoers.d/10_$Username
+echo '$Username ALL=(ALL) NOPASSWD: ALL'     >> /etc/sudoers.d/10_$Username
+chmod 0440 /etc/sudoers.d/10_$Username
 
-su - vagrant
+su - $Username
 mkdir ~/.ssh
 curl -L https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub > ~/.ssh/authorized_keys
 exit
