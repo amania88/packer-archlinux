@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "1.9.3"
+ruby RUBY_VERSION
 
 gem "json"
 gem "thor", "~> 0.19"
